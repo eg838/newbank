@@ -42,14 +42,21 @@ public class NewBank {
 		if(customers.containsKey(customer.getKey())) {
 			switch(request) {
 			case "SHOWMYACCOUNTS" : return showMyAccounts(customer);
-			default : return "FAIL";
+			case "NEWBANK Savings" : return createAccount(customer,"Savings");
+			case "NEWBANK Checking" : return createAccount(customer,"Checking");
+			case "NEWBANK Main" : return createAccount(customer,"Main");
 			}
 		}
-		return "FAIL";
+		return "Incorrect Command Entered";
 	}
 	
 	private String showMyAccounts(CustomerID customer) {
 		return (customers.get(customer.getKey())).accountsToString();
+	}
+
+	private String createAccount(CustomerID customer, String accountName) {
+		customers.get(customer.getKey()).addAccount(new Account(accountName, 0.0));
+		return "Account Created";
 	}
 
 }
