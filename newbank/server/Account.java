@@ -16,7 +16,7 @@ public class Account {
 		return (accountName + ": " + openingBalance);
 	}
 
-	public String accountNameToString(){
+	public String getAccountName(){
 		return (accountName);
 	}
 }

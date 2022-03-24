@@ -57,12 +57,12 @@ public class NewBank {
 	private String createAccount(CustomerID customer, String accountName) {
 
 			for(Account a : customers.get(customer.getKey()).accounts){
-				if(a.accountNameToString() == accountName){
+				if(a.getAccountName() == accountName){
 					return "Account already Exists";
 				}
 			}
 		customers.get(customer.getKey()).addAccount(new Account(accountName, 0.0));
-		return accountName + " Account Created";
+		return "Account: " + accountName + "Is created successfully";
 
 		}
 
