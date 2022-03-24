@@ -1,5 +1,7 @@
 package newbank.server;
 
+import java.util.ArrayList;
+
 public class Account {
 	
 	private String accountName;
@@ -14,4 +16,7 @@ public class Account {
 		return (accountName + ": " + openingBalance);
 	}
 
+	public String getAccountName(){
+		return (accountName);
+	}
 }
