@@ -2,6 +2,7 @@ package newbank.server;
 
 import java.util.HashMap;
 
+
 public class NewBank {
 	
 	private static final NewBank bank = new NewBank();
@@ -27,6 +28,7 @@ public class NewBank {
 	}
 	
 	public static NewBank getBank() {
+
 		return bank;
 	}
 	
@@ -42,14 +44,28 @@ public class NewBank {
 		if(customers.containsKey(customer.getKey())) {
 			switch(request) {
 			case "SHOWMYACCOUNTS" : return showMyAccounts(customer);
-			default : return "FAIL";
+			default :
+				return "FAIL";
 			}
+
 		}
+
 		return "FAIL";
 	}
 	
 	private String showMyAccounts(CustomerID customer) {
+
 		return (customers.get(customer.getKey())).accountsToString();
+	}
+
+	private String pay(CustomerID customer, String payAccountName, String receiveCustName, String receiveAccount, double amount) {
+ 		Account customerPay = customers.get(customer.getKey()).getAccount(payAccountName);
+		Account customerReceive = customers.get(receiveCustName).getAccount(receiveAccount);
+
+		customerPay.withdraw(amount);
+		customerReceive.deposit(amount);
+
+		return "DEFAULT - SUCCESS";
 	}
 
 }
