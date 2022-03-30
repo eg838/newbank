@@ -3,16 +3,10 @@ package newbank.server;
 import java.util.ArrayList;
 
 public class Customer {
-<<<<<<< HEAD
 	
 	ArrayList<Account> accounts;
-	
-=======
-
-	private ArrayList<Account> accounts;
 	private String password;
 
->>>>>>> main
 	public Customer() {
 		accounts = new ArrayList<>();
 		password = null;
