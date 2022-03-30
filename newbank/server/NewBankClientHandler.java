@@ -57,7 +57,9 @@ public class NewBankClientHandler extends Thread {
 						String response = bank.processRequest(customer, request, s, in, out);
 						out.println(response);
 					}
-				}
+				}else {
+ 					out.println("Log In Failed");
+ 				}
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
