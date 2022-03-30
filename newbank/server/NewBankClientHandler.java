@@ -18,6 +18,23 @@ public class NewBankClientHandler extends Thread{
 		in = new BufferedReader(new InputStreamReader(s.getInputStream()));
 		out = new PrintWriter(s.getOutputStream(), true);
 	}
+
+	public void printOut(String s) {
+		try {
+			out.println(s);
+		} catch (RuntimeException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public String getInput() {
+		try {
+			return in.readLine();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
 	
 	public void run() {
 		// keep getting requests from the client and processing them
@@ -37,7 +54,7 @@ public class NewBankClientHandler extends Thread{
 				while(true) {
 					String request = in.readLine();
 					System.out.println("Request from " + customer.getKey());
-					String response = bank.processRequest(customer, request);
+					String response = bank.processRequest(customer, request, s, in, out);
 					out.println(response);
 				}
 			}
