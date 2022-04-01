@@ -3,8 +3,8 @@ package newbank.server;
 import java.util.ArrayList;
 
 public class Customer {
-
-	private ArrayList<Account> accounts;
+	
+	ArrayList<Account> accounts;
 	private String password;
 
 	public Customer() {
@@ -30,5 +30,15 @@ public class Customer {
 
 	public String getPW() {
 		return password;
+	}
+
+	// retrieve account
+	public Account getAccount(String accountName) {
+		for (Account a : accounts) {
+			if (a.getAccountName().equals(accountName)) {
+				return a;
+			}
+		}
+		return null;
 	}
 }
