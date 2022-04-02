@@ -1,6 +1,10 @@
 package newbank.server;
 
 import java.util.HashMap;
+import java.io.BufferedReader;
+import java.io.PrintWriter;
+import java.net.Socket;
+import java.io.IOException;
 
 public class NewBank {
 
@@ -17,14 +21,17 @@ public class NewBank {
 	private void addTestData() {
 		Customer bhagy = new Customer();
 		bhagy.addAccount(new Account("Main", 1000.0));
+		bhagy.registerPW("PWtest1");
 		customers.put("Bhagy", bhagy);
 
 		Customer christina = new Customer();
 		christina.addAccount(new Account("Savings", 1500.0));
+		christina.registerPW("PWtest2");
 		customers.put("Christina", christina);
 
 		Customer john = new Customer();
 		john.addAccount(new Account("Checking", 250.0));
+		john.registerPW("PWtest3");
 		customers.put("John", john);
 	}
 
@@ -35,7 +42,9 @@ public class NewBank {
 
 	public synchronized CustomerID checkLogInDetails(String userName, String password) {
 		if (customers.containsKey(userName)) {
-			return new CustomerID(userName);
+			if (customers.get(userName).getPW().equals(password)) {
+				return new CustomerID(userName);
+			}
 		}
 		return null;
 	}
@@ -54,15 +63,14 @@ public class NewBank {
 					return createAccount(customer, "Main");
 				case "PAY":
 					return pay(customer);
+				case "MOVE":
+					return move(customer);
 			}
-
 		}
-
-		return "FAIL";
+		return "Incorrect Command Entered";
 	}
 
 	private String showMyAccounts(CustomerID customer) {
-
 		return (customers.get(customer.getKey())).accountsToString();
 	}
 
@@ -112,8 +120,26 @@ public class NewBank {
 
 		senderAccount.withdraw(amount);
 		receiverAccount.deposit(amount);
-
 		newBankClientHandler.printOut("DEFAULT - SUCCESS");
 	}
 
+	private String move(CustomerID customer) {
+		String resp;
+
+		newBankClientHandler.printOut("Enter amount");
+		String amount = newBankClientHandler.getInput();
+		newBankClientHandler.printOut("Enter sender type");
+		String sender = newBankClientHandler.getInput();
+		newBankClientHandler.printOut("Enter reciever type");
+		String receiver = newBankClientHandler.getInput();
+		newBankClientHandler.printOut("Making the movement...");
+		Account senderAcc = customers.get(customer.getKey()).getAccount(sender);
+		Account receiverAcc = customers.get(customer.getKey()).getAccount(receiver);
+
+		senderAcc.withdraw(Double.parseDouble(amount));
+		receiverAcc.deposit(Double.parseDouble(amount));
+		resp = "Transaction completed succefully";
+
+		return resp;
+	}
 }
