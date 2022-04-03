@@ -76,7 +76,7 @@ public class NewBank {
 			}
 		}
 		customers.get(customer.getKey()).addAccount(new Account(accountName, 0.0));
-		return "Account: " + accountName + "Is created successfully";
+		return "Account: " + accountName + " Is created successfully";
 
 	}
 
@@ -87,7 +87,7 @@ public class NewBank {
 		String amount = newBankClientHandler.getInput();
 		newBankClientHandler.printOut("Enter sender type");
 		String sender = newBankClientHandler.getInput();
-		newBankClientHandler.printOut("Enter reciever type");
+		newBankClientHandler.printOut("Enter receiver type");
 		String receiver = newBankClientHandler.getInput();
 		newBankClientHandler.printOut("Making the movement...");
 		Account senderAcc = customers.get(customer.getKey()).getAccount(sender);
@@ -95,7 +95,7 @@ public class NewBank {
 
 		senderAcc.withdraw(Double.parseDouble(amount));
 		receiverAcc.deposit(Double.parseDouble(amount));
-		resp="Transaction completed succefully";
+		resp="Transaction completed successfully";
 
 		return resp;
 	}

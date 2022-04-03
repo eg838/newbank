@@ -50,9 +50,46 @@ public class NewBankClientHandler extends Thread {
 				CustomerID customer = bank.checkLogInDetails(userName, password);
 				// if the user is authenticated then get requests from the user and process them 
 				if(customer != null) {
-					out.println("Log In Successful. What do you want to do?");
+
+					out.println("Log In Successful.What do you want to do?");
+					out.println();
+
+					/* add options to show accounts and move. Other options to be added later on
+					out.printf("Choose an option below by entering the number against it to continue: %n" +
+							"1: SHOWMYACCOUNTS %n" +
+							"2: MOVE %n" +
+							"3: NEWBANK Savings %n" +
+							"4: NEWBANK Checking");  */
+
+					out.println("Choose an option below by entering the number against it to continue:");
+					out.println("1: SHOWMYACCOUNTS");
+					out.println("2: MOVE");
+					out.println("3: NEWBANK Savings");
+					out.println("4: NEWBANK Checking");
+
+
 					while(true) {
-						String request = in.readLine();
+
+						String request = "";
+						int option  = Integer.parseInt(in.readLine());
+
+						switch(option){
+							case 1:
+								request = "SHOWMYACCOUNTS";
+										break;
+							case 2:
+								request = "MOVE";
+								break;
+
+							case 3:
+								request = "NEWBANK Savings";
+								break;
+
+							case 4:
+								request = "NEWBANK Checking";
+								break;
+						}
+
 						System.out.println("Request from " + customer.getKey());
 						String response = bank.processRequest(customer, request);
 						out.println(response);
