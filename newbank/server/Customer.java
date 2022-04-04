@@ -3,7 +3,6 @@ package newbank.server;
 import java.util.ArrayList;
 
 public class Customer {
-	
 	ArrayList<Account> accounts;
 	private String password;
 
