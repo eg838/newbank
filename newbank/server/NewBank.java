@@ -87,7 +87,9 @@ public class NewBank {
 					return "Unable to delete account whilst there is funds in the account, please move any funds to a different account prior to trying again.";
 				}
 				else {
-					customers.get(customer.getKey()).removeAccount(customers.get(customer.getKey()).getAccount(accountName));
+					Customer currentCustomer = customers.get(customer.getKey());
+					Account deletedAccount = currentCustomer.getAccount(accountName);
+					currentCustomer.removeAccount(deletedAccount);
 					return "Account Removed";
 				}
 			}
