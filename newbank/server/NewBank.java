@@ -59,6 +59,9 @@ public class NewBank {
 			case "NEWBANK Checking" : return createAccount(customer,"Checking");
 			case "NEWBANK Main" : return createAccount(customer,"Main");
 			case "MOVE" : return move(customer);
+			case "Delete Savings" : return deleteAccount(customer,"Savings");
+			case "Delete Checking" : return deleteAccount(customer,"Checking");
+			case "Delete Main" : return deleteAccount(customer,"Main");
 			}
 		}
 		return "Incorrect Command Entered";
@@ -66,6 +69,21 @@ public class NewBank {
 
 	private String showMyAccounts(CustomerID customer) {
 		return (customers.get(customer.getKey())).accountsToString();
+	}
+
+	private String deleteAccount(CustomerID customer, String accountName) {
+		for (Account a : customers.get(customer.getKey()).accounts) {
+			if (a.getAccountName() == accountName) {
+				if(a.getCurrentBalance() > 0){
+					return "Unable to delete account whilst there is funds in the account, please move any funds to a different account prior to trying again.";
+				}
+				else {
+					customers.get(customer.getKey()).removeAccount(customers.get(customer.getKey()).getAccount(accountName));
+					return "Account Removed";
+				}
+			}
+		}
+		return "Account does not exist";
 	}
 
 	private String createAccount(CustomerID customer, String accountName) {

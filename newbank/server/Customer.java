@@ -24,6 +24,10 @@ public class Customer {
 		accounts.add(account);
 	}
 
+	public void removeAccount(Account account) {
+		accounts.remove(account);
+	}
+
 	public void registerPW(String pw) {
 		password = pw;
 	}
