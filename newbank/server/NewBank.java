@@ -6,18 +6,16 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.io.IOException;
 
-
-
-
 public class NewBank {
 
 	private static final NewBank bank = new NewBank();
-	private HashMap<String,Customer> customers;
+	private HashMap<String, Customer> customers;
 	private NewBankClientHandler newBankClientHandler;
 
 	private NewBank() {
 		customers = new HashMap<>();
 		addTestData();
+		newBankClientHandler = new NewBankClientHandler();
 	}
 
 	private void addTestData() {
@@ -38,6 +36,7 @@ public class NewBank {
 	}
 
 	public static NewBank getBank() {
+
 		return bank;
 	}
 
@@ -52,16 +51,26 @@ public class NewBank {
 
 	// commands from the NewBank customer are processed in this method
 	public synchronized String processRequest(CustomerID customer, String request) {
-		if(customers.containsKey(customer.getKey())) {
-			switch(request) {
-			case "SHOWMYACCOUNTS" : return showMyAccounts(customer);
-			case "NEWBANK Savings" : return createAccount(customer,"Savings");
-			case "NEWBANK Checking" : return createAccount(customer,"Checking");
-			case "NEWBANK Main" : return createAccount(customer,"Main");
-			case "MOVE" : return move(customer);
-			case "Delete Savings" : return deleteAccount(customer,"Savings");
-			case "Delete Checking" : return deleteAccount(customer,"Checking");
-			case "Delete Main" : return deleteAccount(customer,"Main");
+		if (customers.containsKey(customer.getKey())) {
+			switch (request) {
+				case "SHOWMYACCOUNTS":
+					return showMyAccounts(customer);
+				case "NEWBANK Savings":
+					return createAccount(customer, "Savings");
+				case "NEWBANK Checking":
+					return createAccount(customer, "Checking");
+				case "NEWBANK Main":
+					return createAccount(customer, "Main");
+				case "PAY":
+					return pay(customer);
+				case "MOVE":
+					return move(customer);
+        case "Delete Savings" : 
+          return deleteAccount(customer,"Savings");
+			  case "Delete Checking" : 
+          return deleteAccount(customer,"Checking");
+			  case "Delete Main" : 
+          return deleteAccount(customer,"Main");
 			}
 		}
 		return "Incorrect Command Entered";
@@ -87,7 +96,6 @@ public class NewBank {
 	}
 
 	private String createAccount(CustomerID customer, String accountName) {
-
 		for (Account a : customers.get(customer.getKey()).accounts) {
 			if (a.getAccountName() == accountName) {
 				return "Account already Exists";
@@ -98,9 +106,47 @@ public class NewBank {
 
 	}
 
-	private String move(CustomerID customer){
+	private void pay(CustomerID currentCustomer) {
+		// STEP1 - receiver username
+		newBankClientHandler.printOut("Enter username you would like to send money");
+		String receiveCustName = newBankClientHandler.getInput();
+
+		if (!customers.containsKey(receiveCustName)) {
+			newBankClientHandler.printOut("FAILED - The user does not exist");
+			return;
+		}
+
+		// STEP2 - receiver account
+		newBankClientHandler.printOut("Enter your account name of receiver");
+		String receiveAccount =  newBankClientHandler.getInput();
+		Account receiverAccount = customers.get(receiveCustName).getAccount(receiveAccount);
+
+		if (receiverAccount === null) {
+			newBankClientHandler.printOut("FAILED -The account does not exist");
+			return;
+		}
+
+		// STEP3 - sender account
+		newBankClientHandler.printOut("Enter your account name to send money");
+		String payAccountName =  newBankClientHandler.getInput();
+		Account senderAccount = customers.get(currentCustomer.getKey()).getAccount(payAccountName);
+
+		// STEP4 - the amount of money to send
+		newBankClientHandler.printOut("Enter the amount to send");
+		double amount =  newBankClientHandler.getInput();
+		if (senderAccount.getCurrentBalance() < amount) {
+			newBankClientHandler.printOut("FAILED - Insufficient balance");
+			return;
+		}
+
+		senderAccount.withdraw(amount);
+		receiverAccount.deposit(amount);
+		newBankClientHandler.printOut("DEFAULT - SUCCESS");
+	}
+
+	private String move(CustomerID customer) {
 		String resp;
-		
+
 		newBankClientHandler.printOut("Enter amount");
 		String amount = newBankClientHandler.getInput();
 		newBankClientHandler.printOut("Enter sender type");
@@ -113,9 +159,8 @@ public class NewBank {
 
 		senderAcc.withdraw(Double.parseDouble(amount));
 		receiverAcc.deposit(Double.parseDouble(amount));
-		resp="Transaction completed succefully";
+		resp = "Transaction completed succefully";
 
 		return resp;
 	}
-
 }
