@@ -18,7 +18,6 @@ public class NewBankClientHandler extends Thread {
 		out = new PrintWriter(s.getOutputStream(), true);
 	}
 
-<<<<<<< HEAD
 	public void printOut(String s) {
 		try {
 			out.println(s);
@@ -37,6 +36,8 @@ public class NewBankClientHandler extends Thread {
 	}
 	
 	public void run() {
+		int tries=0;
+		String userFailed;
 		// keep getting requests from the client and processing them
 		try {
 			// ask for user name
@@ -48,44 +49,32 @@ public class NewBankClientHandler extends Thread {
 			out.println("Checking Details...");
 			// authenticate user and get customer ID token from bank for use in subsequent requests
 			CustomerID customer = bank.checkLogInDetails(userName, password);
+			
+			UserSession userS=new UserSession(userName);
+			userFailed=userName;// create a class that stores the username and number of attempts to login and 
+			// by that you can easily check which user attempted to login unsuccessfully
+
+
 			// if the user is authenticated then get requests from the user and process them 
 			if(customer != null) {
 				out.println("Log In Successful. What do you want to do?");
 				while(true) {
 					String request = in.readLine();
 					System.out.println("Request from " + customer.getKey());
-					String response = bank.processRequest(customer, request, s, in, out);
+					String response = bank.processRequest(customer, request);
 					out.println(response);
-=======
-	public void run() {
-		// keep getting requests from the client and processing them
-		try {
-			while (true) {
-				// ask for user name
-				out.println("Enter Username");
-				String userName = in.readLine();
-				// ask for password
-				out.println("Enter Password");
-				String password = in.readLine();
-				out.println("Checking Details...");
-				// authenticate user and get customer ID token from bank for use in subsequent
-				// requests
-				CustomerID customer = bank.checkLogInDetails(userName, password);
-				// if the user is authenticated then get requests from the user and process them
-				if (customer != null) {
-					out.println("Log In Successful. What do you want to do?");
-					while (true) {
-						String request = in.readLine();
-						System.out.println("Request from " + customer.getKey());
-						String response = bank.processRequest(customer, request);
-						out.println(response);
-					}
-				} else {
-					out.println("Log In Failed");
->>>>>>> main
 				}
+			}else{
+				out.println("Log In Failed. Username or password is incorrect!");
+				userS.incrementPasswordTries();
+				// same as on line 52-53 counts for here
+				if(userS.getPasswordTries()>3 && userS.getUsername()==userName){
+					throw new Exception("You tried too many times so you can't log in with that username!");
+					out.println("You tried too many times so you can't log in with that username!");
+				}
+				tries++;
 			}
-		} catch (IOException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
 			try {

@@ -12,14 +12,9 @@ import java.io.IOException;
 public class NewBank {
 
 	private static final NewBank bank = new NewBank();
-<<<<<<< HEAD
 	private HashMap<String,Customer> customers;
 	private NewBankClientHandler newBankClientHandler;
 	
-=======
-	private HashMap<String, Customer> customers;
-
->>>>>>> main
 	private NewBank() {
 		customers = new HashMap<>();
 		addTestData();
@@ -57,7 +52,6 @@ public class NewBank {
 
 	// commands from the NewBank customer are processed in this method
 	public synchronized String processRequest(CustomerID customer, String request) {
-<<<<<<< HEAD
 		if(customers.containsKey(customer.getKey())) {
 			switch(request) {
 			case "SHOWMYACCOUNTS" : return showMyAccounts(customer);
@@ -65,18 +59,6 @@ public class NewBank {
 			case "NEWBANK Checking" : return createAccount(customer,"Checking");
 			case "NEWBANK Main" : return createAccount(customer,"Main");
 			case "MOVE" : return move(customer);
-=======
-		if (customers.containsKey(customer.getKey())) {
-			switch (request) {
-				case "SHOWMYACCOUNTS":
-					return showMyAccounts(customer);
-				case "NEWBANK Savings":
-					return createAccount(customer, "Savings");
-				case "NEWBANK Checking":
-					return createAccount(customer, "Checking");
-				case "NEWBANK Main":
-					return createAccount(customer, "Main");
->>>>>>> main
 			}
 		}
 		return "Incorrect Command Entered";
@@ -97,7 +79,6 @@ public class NewBank {
 		return "Account: " + accountName + "Is created successfully";
 
 	}
-<<<<<<< HEAD
 
 	private String move(CustomerID customer){
 		String resp;
@@ -118,7 +99,5 @@ public class NewBank {
 
 		return resp;
 	}
-=======
->>>>>>> main
 
 }
