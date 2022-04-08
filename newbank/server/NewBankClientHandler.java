@@ -34,6 +34,7 @@ public class NewBankClientHandler extends Thread {
 		}
 		return null;
 	}
+<<<<<<< HEAD
 	
 	public void run() {
 		int tries=0;
@@ -63,6 +64,34 @@ public class NewBankClientHandler extends Thread {
 					System.out.println("Request from " + customer.getKey());
 					String response = bank.processRequest(customer, request);
 					out.println(response);
+=======
+
+	public void run() {
+		// keep getting requests from the client and processing them
+		try {
+			while (true) {
+				// ask for user name
+				out.println("Enter Username");
+				String userName = in.readLine();
+				// ask for password
+				out.println("Enter Password");
+				String password = in.readLine();
+				out.println("Checking Details...");
+				// authenticate user and get customer ID token from bank for use in subsequent
+				// requests
+				CustomerID customer = bank.checkLogInDetails(userName, password);
+				// if the user is authenticated then get requests from the user and process them
+				if (customer != null) {
+					out.println("Log In Successful. What do you want to do?");
+					while (true) {
+						String request = in.readLine();
+						System.out.println("Request from " + customer.getKey());
+						String response = bank.processRequest(customer, request);
+						out.println(response);
+					}
+				} else {
+					out.println("Log In Failed");
+>>>>>>> main
 				}
 			}else{
 				out.println("Log In Failed. Username or password is incorrect!");
