@@ -37,7 +37,7 @@ public class NewBank {
 		john.registerPW("PWtest3");
 		customers.put("John", john);
 
-		sessions.put("etnik", new UserSession(etnik));
+		sessions.put("etnik", new UserSession("etnik"));
 		sessions.get("etnik").incrementAttempt();
 	}
 
