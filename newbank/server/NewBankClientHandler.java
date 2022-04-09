@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.HashMap;
 
 public class NewBankClientHandler extends Thread {
 
@@ -49,19 +50,22 @@ public class NewBankClientHandler extends Thread {
 				// authenticate user and get customer ID token from bank for use in subsequent requests
 				CustomerID customer = bank.checkLogInDetails(userName, password);
 				// instantiate an user session to tracks login attempts
-				UserSession userS = new UserSession(userName);
+				//UserSession userS = new UserSession(userName);
 				// if the user is authenticated then get requests from the user and process them
 				if (customer != null) {
 					out.println("Log In Successful. What do you want to do?");
-					while (true) {
+					//while (true) {
 						String request = in.readLine();
 						System.out.println("Request from " + customer.getKey());
 						String response = bank.processRequest(customer, request);
 						out.println(response);
-					}
+					//}
 				} else {
 					out.println("Log In Failed. Username or password is incorrect!");
-					userS.incrementAttempt();
+					HashMap<String, UserSession> sessions=bank.getSessions();
+					out.println(sessions);
+					UserSession userS=sessions.get(userName);
+					out.println(userS.getAttempts());
 					if (userS.getAttempts() > 3 && userS.getUsername() == userName) {
 						throw new Exception("You tried too many times so you can't log in with that username!");
 					}

@@ -11,11 +11,14 @@ public class NewBank {
 	private static final NewBank bank = new NewBank();
 	private HashMap<String, Customer> customers;
 	private NewBankClientHandler newBankClientHandler;
+	private HashMap<String, UserSession> sessions;
+
 
 	private NewBank() {
 		customers = new HashMap<>();
+		sessions = new HashMap<>();
 		addTestData();
-		newBankClientHandler = new NewBankClientHandler();
+		// newBankClientHandler = new NewBankClientHandler();
 	}
 
 	private void addTestData() {
@@ -33,10 +36,15 @@ public class NewBank {
 		john.addAccount(new Account("Checking", 250.0));
 		john.registerPW("PWtest3");
 		customers.put("John", john);
+
+		newBankClientHandler.printOut(customers);
+
+		sessions.put("etnik", new UserSession(etnik));
+		sessions.get("etnik").incrementAttempt();
+		newBankClientHandler.printOut(sessions);
 	}
 
 	public static NewBank getBank() {
-
 		return bank;
 	}
 
@@ -44,9 +52,21 @@ public class NewBank {
 		if (customers.containsKey(userName)) {
 			if (customers.get(userName).getPW().equals(password)) {
 				return new CustomerID(userName);
+			}else{
+				if(sessions.containsKey(userName)){
+					UserSession userS= sessions.get(userName);
+					userS.incrementAttempt();
+				}else{
+					sessions.put(userName, new UserSession(userName));
+				}
 			}
+			
 		}
 		return null;
+	}
+
+	public HashMap<String, UserSession> getSessions(){
+		return sessions;
 	}
 
 	// commands from the NewBank customer are processed in this method
@@ -61,8 +81,8 @@ public class NewBank {
 					return createAccount(customer, "Checking");
 				case "NEWBANK Main":
 					return createAccount(customer, "Main");
-				case "PAY":
-					return pay(customer);
+				// case "PAY":
+				// 	return pay(customer);
 				case "MOVE":
 					return move(customer);
 				case "Delete Savings" : 
@@ -108,43 +128,43 @@ public class NewBank {
 
 	}
 
-	private void pay(CustomerID currentCustomer) {
-		// STEP1 - receiver username
-		newBankClientHandler.printOut("Enter username you would like to send money");
-		String receiveCustName = newBankClientHandler.getInput();
+	// private void pay(CustomerID currentCustomer) {
+	// 	// STEP1 - receiver username
+	// 	newBankClientHandler.printOut("Enter username you would like to send money");
+	// 	String receiveCustName = newBankClientHandler.getInput();
 
-		if (!customers.containsKey(receiveCustName)) {
-			newBankClientHandler.printOut("FAILED - The user does not exist");
-			return;
-		}
+	// 	if (!customers.containsKey(receiveCustName)) {
+	// 		newBankClientHandler.printOut("FAILED - The user does not exist");
+	// 		return;
+	// 	}
 
-		// STEP2 - receiver account
-		newBankClientHandler.printOut("Enter your account name of receiver");
-		String receiveAccount =  newBankClientHandler.getInput();
-		Account receiverAccount = customers.get(receiveCustName).getAccount(receiveAccount);
+	// 	// STEP2 - receiver account
+	// 	newBankClientHandler.printOut("Enter your account name of receiver");
+	// 	String receiveAccount =  newBankClientHandler.getInput();
+	// 	Account receiverAccount = customers.get(receiveCustName).getAccount(receiveAccount);
 
-		if (receiverAccount === null) {
-			newBankClientHandler.printOut("FAILED -The account does not exist");
-			return;
-		}
+	// 	if (receiverAccount == null) {
+	// 		newBankClientHandler.printOut("FAILED -The account does not exist");
+	// 		return;
+	// 	}
 
-		// STEP3 - sender account
-		newBankClientHandler.printOut("Enter your account name to send money");
-		String payAccountName =  newBankClientHandler.getInput();
-		Account senderAccount = customers.get(currentCustomer.getKey()).getAccount(payAccountName);
+	// 	// STEP3 - sender account
+	// 	newBankClientHandler.printOut("Enter your account name to send money");
+	// 	String payAccountName =  newBankClientHandler.getInput();
+	// 	Account senderAccount = customers.get(currentCustomer.getKey()).getAccount(payAccountName);
 
-		// STEP4 - the amount of money to send
-		newBankClientHandler.printOut("Enter the amount to send");
-		double amount =  newBankClientHandler.getInput();
-		if (senderAccount.getCurrentBalance() < amount) {
-			newBankClientHandler.printOut("FAILED - Insufficient balance");
-			return;
-		}
+	// 	// STEP4 - the amount of money to send
+	// 	newBankClientHandler.printOut("Enter the amount to send");
+	// 	double amount =  newBankClientHandler.getInput();
+	// 	if (senderAccount.getCurrentBalance() < amount) {
+	// 		newBankClientHandler.printOut("FAILED - Insufficient balance");
+	// 		return;
+	// 	}
 
-		senderAccount.withdraw(amount);
-		receiverAccount.deposit(amount);
-		newBankClientHandler.printOut("DEFAULT - SUCCESS");
-	}
+	// 	senderAccount.withdraw(amount);
+	// 	receiverAccount.deposit(amount);
+	// 	newBankClientHandler.printOut("DEFAULT - SUCCESS");
+	// }
 
 	private String move(CustomerID customer) {
 		String resp;
