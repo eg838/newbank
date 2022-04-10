@@ -1,10 +1,6 @@
 package newbank.server;
 
 import java.util.HashMap;
-import java.io.BufferedReader;
-import java.io.PrintWriter;
-import java.net.Socket;
-import java.io.IOException;
 
 public class NewBank {
 
@@ -13,12 +9,10 @@ public class NewBank {
 	private NewBankClientHandler newBankClientHandler;
 	private HashMap<String, UserSession> sessions;
 
-
 	private NewBank() {
 		customers = new HashMap<>();
 		sessions = new HashMap<>();
 		addTestData();
-		newBankClientHandler = new NewBankClientHandler();
 	}
 
 	private void addTestData() {
@@ -67,7 +61,8 @@ public class NewBank {
 	}
 
 	// commands from the NewBank customer are processed in this method
-	public synchronized String processRequest(CustomerID customer, String request) {
+	public synchronized String processRequest(CustomerID customer, String request,
+			NewBankClientHandler newBankClientHandler) {
 		if (customers.containsKey(customer.getKey())) {
 			switch (request) {
 				case "SHOWMYACCOUNTS":
@@ -79,15 +74,15 @@ public class NewBank {
 				case "NEWBANK Main":
 					return createAccount(customer, "Main");
 				case "PAY":
-					return pay(customer);
+					return pay(customer, newBankClientHandler);
 				case "MOVE":
-					return move(customer);
-				case "Delete Savings" : 
-					return deleteAccount(customer,"Savings");
-				case "Delete Checking" : 
-					return deleteAccount(customer,"Checking");
-				case "Delete Main" : 
-					return deleteAccount(customer,"Main");
+					return move(customer, newBankClientHandler);
+				case "Delete Savings":
+					return deleteAccount(customer, "Savings");
+				case "Delete Checking":
+					return deleteAccount(customer, "Checking");
+				case "Delete Main":
+					return deleteAccount(customer, "Main");
 			}
 		}
 		return "Incorrect Command Entered";
@@ -100,10 +95,9 @@ public class NewBank {
 	private String deleteAccount(CustomerID customer, String accountName) {
 		for (Account a : customers.get(customer.getKey()).accounts) {
 			if (a.getAccountName() == accountName) {
-				if(a.getCurrentBalance() > 0){
+				if (a.getCurrentBalance() > 0) {
 					return "Unable to delete account whilst there is funds in the account, please move any funds to a different account prior to trying again.";
-				}
-				else {
+				} else {
 					Customer currentCustomer = customers.get(customer.getKey());
 					Account deletedAccount = currentCustomer.getAccount(accountName);
 					currentCustomer.removeAccount(deletedAccount);
@@ -125,45 +119,44 @@ public class NewBank {
 
 	}
 
-	private void pay(CustomerID currentCustomer) {
+	private String pay(CustomerID currentCustomer, NewBankClientHandler newBankClientHandler) {
 		// STEP1 - receiver username
 		newBankClientHandler.printOut("Enter username you would like to send money");
 		String receiveCustName = newBankClientHandler.getInput();
-
 		if (!customers.containsKey(receiveCustName)) {
-			newBankClientHandler.printOut("FAILED - The user does not exist");
-			return;
+			return "FAILED - The user does not exist";
 		}
 
 		// STEP2 - receiver account
 		newBankClientHandler.printOut("Enter your account name of receiver");
-		String receiveAccount =  newBankClientHandler.getInput();
+		String receiveAccount = newBankClientHandler.getInput();
 		Account receiverAccount = customers.get(receiveCustName).getAccount(receiveAccount);
-
 		if (receiverAccount == null) {
-			newBankClientHandler.printOut("FAILED -The account does not exist");
-			return;
+			return "FAILED - The account does not exist";
 		}
 
 		// STEP3 - sender account
 		newBankClientHandler.printOut("Enter your account name to send money");
-		String payAccountName =  newBankClientHandler.getInput();
+		String payAccountName = newBankClientHandler.getInput();
 		Account senderAccount = customers.get(currentCustomer.getKey()).getAccount(payAccountName);
+		if (senderAccount == null) {
+			return "FAILED - The account does not exist";
+		}
 
 		// STEP4 - the amount of money to send
 		newBankClientHandler.printOut("Enter the amount to send");
-		double amount =  newBankClientHandler.getInput();
-		if (senderAccount.getCurrentBalance() < amount) {
-			newBankClientHandler.printOut("FAILED - Insufficient balance");
-			return;
+		String amount = newBankClientHandler.getInput();
+		double numAmount = Integer.parseInt(amount);
+		if (senderAccount.getCurrentBalance() < numAmount) {
+			return "FAILED - Insufficient balance";
 		}
 
-		senderAccount.withdraw(amount);
-		receiverAccount.deposit(amount);
-		newBankClientHandler.printOut("DEFAULT - SUCCESS");
+		senderAccount.withdraw(numAmount);
+		receiverAccount.deposit(numAmount);
+		return "DEFAULT - SUCCESS";
 	}
 
-	private String move(CustomerID customer) {
+	private String move(CustomerID customer, NewBankClientHandler newBankClientHandler) {
 		String resp;
 
 		newBankClientHandler.printOut("Enter amount");
