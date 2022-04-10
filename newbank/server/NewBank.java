@@ -6,9 +6,12 @@ public class NewBank {
 
 	private static final NewBank bank = new NewBank();
 	private HashMap<String, Customer> customers;
+	private NewBankClientHandler newBankClientHandler;
+	private HashMap<String, UserSession> sessions;
 
 	private NewBank() {
 		customers = new HashMap<>();
+		sessions = new HashMap<>();
 		addTestData();
 	}
 
@@ -27,10 +30,12 @@ public class NewBank {
 		john.addAccount(new Account("Checking", 250.0));
 		john.registerPW("PWtest3");
 		customers.put("John", john);
+
+		sessions.put("etnik", new UserSession("etnik"));
+		sessions.get("etnik").incrementAttempt();
 	}
 
 	public static NewBank getBank() {
-
 		return bank;
 	}
 
@@ -38,9 +43,21 @@ public class NewBank {
 		if (customers.containsKey(userName)) {
 			if (customers.get(userName).getPW().equals(password)) {
 				return new CustomerID(userName);
+			}else{
+				if(sessions.containsKey(userName)){
+					UserSession userS= sessions.get(userName);
+					userS.incrementAttempt();
+				}else{
+					sessions.put(userName, new UserSession(userName));
+				}
 			}
+			
 		}
 		return null;
+	}
+
+	public HashMap<String, UserSession> getSessions(){
+		return sessions;
 	}
 
 	// commands from the NewBank customer are processed in this method
