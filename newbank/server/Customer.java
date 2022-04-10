@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 public class Customer {
 	ArrayList<Account> accounts;
-	private String password;
+	public String password;
 
 	public Customer() {
 		accounts = new ArrayList<>();
