@@ -83,6 +83,10 @@ public class NewBank {
 					return deleteAccount(customer, "Checking");
 				case "Delete Main":
 					return deleteAccount(customer, "Main");
+				case "Change Password":
+					return changePassword(customer, newBankClientHandler);
+				case "Log Out":
+					return logOut(newBankClientHandler);
 			}
 		}
 		return "Incorrect Command Entered";
@@ -108,14 +112,43 @@ public class NewBank {
 		return "Account does not exist";
 	}
 
+	private String changePassword(CustomerID customer, NewBankClientHandler newBankClientHandler){
+		newBankClientHandler.printOut("Please enter current password");
+		String receiveCurrentPassword = newBankClientHandler.getInput();
+		if(customers.get(customer.getKey()).password.equals(receiveCurrentPassword)){
+			newBankClientHandler.printOut("Please enter new password of at least 8 characters");
+			String receiveNewPasswordOne = newBankClientHandler.getInput();
+			if(receiveNewPasswordOne.length() < 8){
+				return "Password is not at least 8 characters long - Password Change Failed";
+			}
+			else {
+				newBankClientHandler.printOut("Please enter new password again");
+				String receiveNewPasswordTwo = newBankClientHandler.getInput();
+				if (receiveNewPasswordOne.equals(receiveNewPasswordTwo)) {
+					customers.get(customer.getKey()).registerPW(receiveNewPasswordOne);
+					return "Password Updated";
+				} else {
+					return "Passwords Do Not Match";
+				}
+			}
+		}
+		else{return "Incorrect Password Entered";}
+	}
+
+	private String logOut(NewBankClientHandler newBankClientHandler) {
+		System.out.println("Logged Out Successfully");
+		newBankClientHandler.run();
+		return "";
+	}
+
 	private String createAccount(CustomerID customer, String accountName) {
 		for (Account a : customers.get(customer.getKey()).accounts) {
 			if (a.getAccountName() == accountName) {
-				return "Account already Exists";
+				return "Account Already Exists";
 			}
 		}
 		customers.get(customer.getKey()).addAccount(new Account(accountName, 0.0));
-		return "Account: " + accountName + "Is created successfully";
+		return "Account: " + accountName + " Created Successfully";
 
 	}
 
@@ -128,7 +161,7 @@ public class NewBank {
 		}
 
 		// STEP2 - receiver account
-		newBankClientHandler.printOut("Enter your account name of receiver");
+		newBankClientHandler.printOut("Enter the receivers account name");
 		String receiveAccount = newBankClientHandler.getInput();
 		Account receiverAccount = customers.get(receiveCustName).getAccount(receiveAccount);
 		if (receiverAccount == null) {
@@ -163,7 +196,7 @@ public class NewBank {
 		String amount = newBankClientHandler.getInput();
 		newBankClientHandler.printOut("Enter sender type");
 		String sender = newBankClientHandler.getInput();
-		newBankClientHandler.printOut("Enter reciever type");
+		newBankClientHandler.printOut("Enter receiver type");
 		String receiver = newBankClientHandler.getInput();
 		newBankClientHandler.printOut("Making the movement...");
 		Account senderAcc = customers.get(customer.getKey()).getAccount(sender);
@@ -171,7 +204,7 @@ public class NewBank {
 
 		senderAcc.withdraw(Double.parseDouble(amount));
 		receiverAcc.deposit(Double.parseDouble(amount));
-		resp = "Transaction completed succefully";
+		resp = "Transaction completed successfully";
 
 		return resp;
 	}
