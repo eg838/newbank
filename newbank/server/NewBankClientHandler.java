@@ -51,7 +51,9 @@ public class NewBankClientHandler extends Thread {
 				CustomerID customer = bank.checkLogInDetails(userName, password);
 				// if the user is authenticated then get requests from the user and process them
 				if (customer != null) {
-					out.println("Log In Successful. What do you want to do?");
+					out.println("Log In Successful. What do you want to do? \nPlease type a command listed below:");
+					out.println("\nSHOWMYACCOUNTS \nNEWBANK Savings \nNEWBANK Checking \nNEWBANK Main \nPAY \nMOVE \nDelete Savings " +
+							"\nDelete Checking \nDelete Main \nChange Password \nLog Out");
 					while (true) {
 						String request = in.readLine();
 						System.out.println("Request from " + customer.getKey());
